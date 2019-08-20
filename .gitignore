@@ -1,0 +1,6 @@
+*/.idea/
+*/env/
+*/venv/
+*/deploy.sh
+*/dev_server.sh
+*/db.sh
