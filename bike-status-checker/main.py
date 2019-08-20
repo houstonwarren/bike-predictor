@@ -6,12 +6,15 @@ from os import getenv
 from datetime import datetime
 
 MODE = getenv('mode')
-CONNECTION_NAME = getenv('db_conn')
+DB_CONN = getenv('db_conn')
 DB_HOST = getenv('db_host')
 DB_USER = getenv('db_user')
 DB_PASSWORD = getenv('db_pass')
 DB_NAME = getenv('db_name')
 WEATHER_KEY = getenv('weather_key')
+
+
+# TODO: go back and delete some of the errant database uploads
 
 
 def update_status(data, context):
