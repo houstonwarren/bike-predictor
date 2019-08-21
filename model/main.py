@@ -25,13 +25,11 @@ def run_all(data, context):
 
     dt = get_forecast_time()
     sig_lags = get_sig_lags('sig_lags.p')
-    print(f"sigs: {sig_lags}")
     status_vec = create_status_array(status_raw, sig_lags, dt)
     weather_vec = create_weather_array(weather_raw)
 
     X = combine_status_weather(status_vec, weather_vec)
-    model_file_name = 'station_rf.p'
-    pred = run_model(model_file_name, X)
+    pred = run_model('station_rf.p', X)
 
     write_model_outputs(pred, dt)
 
@@ -39,7 +37,6 @@ def run_all(data, context):
 
 
 def run_model(model_file, x_obs):
-    print(f'model file name: {model_file}')
     with open(model_file, 'rb') as file:
         model = pickle.load(file)
 
