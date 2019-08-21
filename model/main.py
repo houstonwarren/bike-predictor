@@ -16,22 +16,62 @@ DB_CONN = getenv('db_conn')
 WEATHER_KEY = getenv('weather_key')
 
 
-def run(data,context):
+# TODO make sure no missing values
+# TODO write the prediction upload function
+
+
+def run_model(data,context):
     weather_raw = get_weather()
     status_raw = get_status()
-    status_vec = create_status_array(status_raw)
+
+    dt = get_forecast_time()
+    sig_lags = get_sig_lags('sig_lags.p')
+    print(sig_lags)
+    status_vec = create_status_array(status_raw,sig_lags,dt)
     weather_vec = create_weather_array(weather_raw)
+
     X = combine_status_weather(status_vec,weather_vec)
-    pred = run_model('station_rf.p',X )
+    model_file_name = 'station_rf.p'
+    pred = run_model(model_file_name, X)
+
+    write_model_outputs(pred,dt)
+
     print(pred)
 
 
 def run_model(model_file, x_obs):
+    print(model_file)
     with open(model_file, 'rb') as file:
         model = pickle.load(file)
 
     pred = model.predict_proba(x_obs)
-    return pred[0][0]
+    return pred[0][1]
+
+
+def write_model_outputs(pred,dt):
+    with get_cursor() as cursor:
+        sql_string = f'''
+            INSERT
+            INTO predictions (forecast_time, prediction) 
+            VALUES (
+                '{dt.strftime('%Y-%m-%d %H-%M-%S')}',
+                {pred}
+            );
+        '''
+
+        cursor.execute(sql_string)
+
+
+def get_sig_lags(file_name):
+    with open(file_name, 'rb') as file:
+        sig_lags = pickle.load(file)
+    return sig_lags
+
+
+def get_forecast_time():
+    dt = datetime.now() + timedelta(hours=12)
+    dt = datetime(dt.year, dt.month, dt.day, dt.hour, 15 * (dt.minute // 15))
+    return dt
 
 
 def get_weather():
@@ -76,10 +116,7 @@ def create_weather_array(weather_raw):
     return weather_vec_fin
 
 
-def create_status_array(status_raw,sig_lags):
-    dt = datetime.now() + timedelta(hours=12)
-    dt = datetime(dt.year, dt.month, dt.day, dt.hour, 15 * (dt.minute // 15))
-    dt.weekday()
+def create_status_array(status_raw,sig_lags,dt):
     if dt.weekday() < 5:
         weekday = 1
     else:
@@ -94,10 +131,6 @@ def create_status_array(status_raw,sig_lags):
 def combine_status_weather(status,weather):
     X = np.array(status + weather).reshape(1, -1)
     return X
-
-
-def write_model_outputs(output):
-    pass
 
 
 def get_cursor():
