@@ -6,8 +6,7 @@ import pickle
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 import numpy as np
 
-
-MODE = getenv('db_conn')
+MODE = getenv('mode')
 DB_HOST = getenv('db_host')
 DB_USER = getenv('db_user')
 DB_PASSWORD = getenv('db_pass')
@@ -20,21 +19,21 @@ WEATHER_KEY = getenv('weather_key')
 # TODO write the prediction upload function
 
 
-def run_all(data,context):
+def run_all(data, context):
     weather_raw = get_weather()
     status_raw = get_status()
 
     dt = get_forecast_time()
     sig_lags = get_sig_lags('sig_lags.p')
     print(f"sigs: {sig_lags}")
-    status_vec = create_status_array(status_raw,sig_lags,dt)
+    status_vec = create_status_array(status_raw, sig_lags, dt)
     weather_vec = create_weather_array(weather_raw)
 
-    X = combine_status_weather(status_vec,weather_vec)
+    X = combine_status_weather(status_vec, weather_vec)
     model_file_name = 'station_rf.p'
     pred = run_model(model_file_name, X)
 
-    write_model_outputs(pred,dt)
+    write_model_outputs(pred, dt)
 
     print(pred)
 
@@ -48,7 +47,7 @@ def run_model(model_file, x_obs):
     return pred[0][1]
 
 
-def write_model_outputs(pred,dt):
+def write_model_outputs(pred, dt):
     with get_cursor() as cursor:
         sql_string = f'''
             INSERT
@@ -90,7 +89,6 @@ def get_weather():
 
 def get_status():
     with get_cursor() as cursor:
-
         # get past month of status
         status_string = '''
             select * 
@@ -116,7 +114,7 @@ def create_weather_array(weather_raw):
     return weather_vec_fin
 
 
-def create_status_array(status_raw,sig_lags,dt):
+def create_status_array(status_raw, sig_lags, dt):
     if dt.weekday() < 5:
         weekday = 1
     else:
@@ -128,7 +126,7 @@ def create_status_array(status_raw,sig_lags,dt):
     return status_vec
 
 
-def combine_status_weather(status,weather):
+def combine_status_weather(status, weather):
     X = np.array(status + weather).reshape(1, -1)
     return X
 
