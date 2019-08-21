@@ -20,13 +20,13 @@ WEATHER_KEY = getenv('weather_key')
 # TODO write the prediction upload function
 
 
-def run_model(data,context):
+def run_all(data,context):
     weather_raw = get_weather()
     status_raw = get_status()
 
     dt = get_forecast_time()
     sig_lags = get_sig_lags('sig_lags.p')
-    print(sig_lags)
+    print(f"sigs: {sig_lags}")
     status_vec = create_status_array(status_raw,sig_lags,dt)
     weather_vec = create_weather_array(weather_raw)
 
@@ -40,7 +40,7 @@ def run_model(data,context):
 
 
 def run_model(model_file, x_obs):
-    print(model_file)
+    print(f'model file name: {model_file}')
     with open(model_file, 'rb') as file:
         model = pickle.load(file)
 
