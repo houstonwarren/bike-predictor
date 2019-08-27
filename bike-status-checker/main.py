@@ -4,6 +4,8 @@ import pymysql
 from pymysql.err import OperationalError
 from os import getenv
 from datetime import datetime
+from google.cloud import pubsub_v1
+
 
 MODE = getenv('mode')
 DB_CONN = getenv('db_conn')
@@ -12,9 +14,6 @@ DB_USER = getenv('db_user')
 DB_PASSWORD = getenv('db_pass')
 DB_NAME = getenv('db_name')
 WEATHER_KEY = getenv('weather_key')
-
-
-# TODO: go back and delete some of the errant database uploads
 
 
 def update_status(data, context):
@@ -72,8 +71,17 @@ def update_status(data, context):
         cursor.execute(status_insert_statement)
         cursor.execute(weather_insert_statement)
 
-    # insert something here to trigger prediction on pub/sub
-    return home
+    # invoke model run using gcloud pubsub
+    push_to_pubsub()
+
+    return 'complete'
+
+
+def push_to_pubsub():
+    publisher = pubsub_v1.PublisherClient()
+    topic_path = publisher.topic_path('citi-244805', 'runmodel-pubsub')
+    data = '{}'.encode('utf-8')
+    publisher.publish(topic_path, data=data)
 
 
 def get_cursor():

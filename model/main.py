@@ -17,13 +17,18 @@ WEATHER_KEY = getenv('weather_key')
 
 # TODO make sure no missing values
 # TODO write the prediction upload function
+# TODO FIX ERROR ON DATABASE/APP TIMEZONE
 
 
 def run_all(data, context):
     weather_raw = get_weather()
     status_raw = get_status()
 
-    dt = get_forecast_time()
+    if MODE == 'PROD':
+        # correct for different timezone on database
+        dt = get_forecast_time() + timedelta(hours=-4)
+    else:
+        dt = get_forecast_time()
     sig_lags = get_sig_lags('sig_lags.p')
     status_vec = create_status_array(status_raw, sig_lags, dt)
     weather_vec = create_weather_array(weather_raw)
