@@ -1,6 +1,6 @@
 <head>
     <meta charset="utf-8">
-    <title>lacrosse elo - home</title>
+    <title>bike predictor</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.2/css/bulma.css" src=></link>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css?family=Special+Elite&display=swap" rel="stylesheet">
@@ -16,59 +16,39 @@
 
   <section style="padding-top: 30px; padding-bottom: 30px">
     <div class="container">
-      <h1 class="title" style="margin-left: 20px;">college lacrosse elo rankings</h1>
+      <h1 class="title" style="margin-left: 20px;"></h1>
     </div>
   </section>
 
   <section>
     <div class="container">
-
-        <div class="columns">
-            <div class="column is-two-fifths" style="margin-left: 20px; margin-right: 20px">
+        <div class="columns is-centered">
+            <div class="column is-three-fifths" style="margin-left: 20px; margin-right: 20px">
                 <h4 class="subtitle is-4 has-text-left">
-                  welcome
+                    bike predictor
                 </h4>
 
+                <div class="box">
+                    <h5 class="subtitle is-5 has-text-left">
+                        there is currently a {{ (predictions[0]['prediction'] * 100)|float|round|int }}% chance that a
+                        bike will be available in 12 hours.
+                    </h5>
+                </div>
+
                 <p>
-                    to lacrosselo, a unique extension of the elo chess ranking algorithm
-                    system to predict men's college lacrosse games.
+                    A prediction algorithm to perform 12-hour advanced forecasts of bike availability
+                    for the citi bike dock on E 10th st on the north side of Tompkins Square Park.
                 </p>
                 <br>
                 <p>
-                    You can read more about this margin-based model and how it works <a href="about">here.</a>
-                    Ranks and game predictions are updated daily at midnight.
+                    You can read more about this model and how it works <a href="">here.</a>
                 </p>
                 <br>
                 <p>
-                    lacrosselo is developed and maintained by Houston Warren. All code is available on
-                    <a href="https://github.com/houstonwarren/lacrosselo">github</a>.
+                    bike-predictor is developed and maintained by Houston Warren. All code is available on
+                    <a href="https://github.com/houstonwarren/bike-predictor">github</a>.
                 </p>
             </div>
-
-          <div class="column is-three-fifths is-centered" style="margin-left: 20px;">
-              <h4 class="subtitle is-4 has-text-left">
-                  current top 10
-              </h4>
-
-              <table class="table is-bordered">
-                <tbody>
-                    {% for rank in ranks[0:10] %}
-                    <tr>
-                        <td style="border: white !important;">
-                            <p class="has-text-right is-size-7" style="padding-top: 5px"> {{loop.index}}</p>
-                        </td>
-                        <td style="border: white !important;">
-                            <p class="is-size-5"> {{rank["team"]|lower}}</p>
-                        </td>
-                        <td style="border: white !important;">
-                            <p class="is-size-7" style="padding-top: 5px"> {{rank["rank"]|float|round|int}}</p>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-              </table>
-          </div>
-
         </div>
 
     </div>
